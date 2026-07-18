@@ -9,10 +9,10 @@ const OTP = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [countdown, setCountdown] = useState(30);
   const inputRefs = useRef([]);
-  
+
   const location = useLocation();
   const navigate = useNavigate();
-  
+
   const phone = location.state?.phone || '0000000000';
   const mockOtp = location.state?.mockOtp;
 
@@ -33,7 +33,7 @@ const OTP = () => {
 
   const executeVerification = async (otpValue) => {
     if (otpValue.length !== 6) return;
-    
+
     setError('');
     setIsLoading(true);
 
@@ -45,10 +45,10 @@ const OTP = () => {
         body: JSON.stringify({ phone, otp: otpValue })
       });
       const data = await response.json();
-      
+
       if (response.ok) {
         localStorage.setItem('token', data.token);
-        
+
         // Artificial delay so the user can clearly see the green "Verifying" text
         setTimeout(() => {
           if (data.isNew || !data.partner.profileCompleted) {
@@ -106,16 +106,16 @@ const OTP = () => {
   };
 
   return (
-    <div className="flex min-h-screen flex-col bg-white items-center font-sans px-6" style={{fontFamily:"'Inter', sans-serif"}}>
+    <div className="flex min-h-screen flex-col bg-white items-center font-sans px-6" style={{ fontFamily: "'Inter', sans-serif" }}>
       <div className="w-full max-w-md mt-8 flex items-center">
         <button onClick={() => navigate(-1)} className="w-24 h-11 flex items-center justify-center rounded-full hover:bg-gray-50 transition-colors -ml-4 gap-1">
           <ArrowLeft size={16} className="text-[#475569]" /> <span className="text-[#475569] text-[14px]">Back</span>
         </button>
       </div>
 
-      <motion.div 
-        initial={{ opacity: 0, y: 10 }} 
-        animate={{ opacity: 1, y: 0 }} 
+      <motion.div
+        initial={{ opacity: 0, y: 10 }}
+        animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.4 }}
         className="w-full max-w-md mt-6"
       >
@@ -126,7 +126,7 @@ const OTP = () => {
           </p>
           {mockOtp && <p className="text-[14px] text-[#F8B500] pt-1">Demo OTP: {mockOtp}</p>}
         </div>
-        
+
         <form onSubmit={handleVerify} className="space-y-10">
           <div>
             <div className="flex justify-center gap-1.5 px-2">
@@ -140,9 +140,8 @@ const OTP = () => {
                   onChange={(e) => handleChange(index, e)}
                   onKeyDown={(e) => handleKeyDown(index, e)}
                   disabled={isLoading}
-                  className={`w-[52px] h-[58px] rounded-[18px] border bg-white text-center text-[22px] text-[#012b39] outline-none transition-all shadow-lg focus:border-[#94A3B8] focus:ring-1 focus:ring-[#94A3B8] disabled:opacity-70 ${
-                    error ? 'border-red-500 bg-red-50' : 'border-[#E2E8F0]'
-                  }`}
+                  className={`w-[52px] h-[58px] rounded-[18px] border bg-white text-center text-[22px] text-[#012b39] outline-none transition-all shadow-lg focus:border-[#94A3B8] focus:ring-1 focus:ring-[#94A3B8] disabled:opacity-70 ${error ? 'border-red-500 bg-red-50' : 'border-[#E2E8F0]'
+                    }`}
                 />
               ))}
             </div>
@@ -163,7 +162,7 @@ const OTP = () => {
 
           <div className="pt-2 h-[44px] flex items-center justify-center">
             {isLoading && (
-              <motion.p 
+              <motion.p
                 initial={{ opacity: 0, scale: 0.9 }}
                 animate={{ opacity: 1, scale: 1 }}
                 className="text-[#64748B] text-[14px]"

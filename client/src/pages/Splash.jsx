@@ -8,7 +8,7 @@ const Splash = () => {
 
   return (
     <div className="flex min-h-screen flex-col bg-white font-sans text-gray-900 selection:bg-yellow-400 selection:text-black" style={{ fontFamily: "'Inter', sans-serif" }}>
-      
+
       {/* 
         ========================================
         Top Navigation Bar

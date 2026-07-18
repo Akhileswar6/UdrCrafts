@@ -20,7 +20,7 @@ const Login = () => {
       setError('Please agree to the Terms of Service & Privacy Policy');
       return;
     }
-    
+
     setError('');
     setIsLoading(true);
 
@@ -33,7 +33,7 @@ const Login = () => {
         body: JSON.stringify({ phone })
       });
       const data = await response.json();
-      
+
       if (response.ok) {
         navigate('/otp', { state: { phone, mockOtp: data.mockOtp } });
       } else {
@@ -47,19 +47,19 @@ const Login = () => {
   };
 
   return (
-    <div className="flex min-h-screen flex-col bg-white items-center font-sans px-6" style={{fontFamily:"'Inter', sans-serif"}}>
+    <div className="flex min-h-screen flex-col bg-white items-center font-sans px-6" style={{ fontFamily: "'Inter', sans-serif" }}>
       <div className="w-full max-w-md mt-8 flex items-center">
         <button onClick={() => navigate(-1)} className="w-24 h-11 flex items-center justify-center rounded-full hover:bg-gray-50 transition-colors -ml-4 gap-1">
-          <ArrowLeft size={16} className="text-[#475569]"  /> <span className='text-[#475569] text-[14px]'>Back</span>
+          <ArrowLeft size={16} className="text-[#475569]" /> <span className='text-[#475569] text-[14px]'>Back</span>
         </button>
       </div>
-      <motion.div 
+      <motion.div
         initial={{ opacity: 0, y: 10 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.4 }}
         className="w-full max-w-md mt-6"
       >
-        
+
 
         {/* Title */}
         <div className="text-center mb-10 space-y-2">
@@ -121,11 +121,10 @@ const Login = () => {
             <button
               type="submit"
               disabled={isLoading || phone.length !== 10 || !agreed}
-              className={`w-full rounded-full py-[10px] text-[17px]  transition-all ${
-                isLoading || phone.length !== 10 || !agreed
+              className={`w-full rounded-full py-[10px] text-[17px]  transition-all ${isLoading || phone.length !== 10 || !agreed
                   ? 'bg-[#83959A] text-white opacity-90 cursor-not-allowed'
                   : 'bg-[#012b39] hover:bg-[#011c26] text-white active:scale-[0.98]'
-              }`}
+                }`}
             >
               {isLoading ? 'Sending...' : 'Continue'}
             </button>
