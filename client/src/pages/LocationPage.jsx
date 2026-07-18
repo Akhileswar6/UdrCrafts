@@ -1,10 +1,58 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ArrowLeft, ArrowRight, MapPin, Check, Navigation } from 'lucide-react';
+import { ArrowLeft, ArrowRight, MapPin, Check, Navigation, Loader2 } from 'lucide-react';
 import { motion } from 'framer-motion';
+import Stepper from '../components/Stepper';
 
 const LocationPage = () => {
   const navigate = useNavigate();
+  const [locationData, setLocationData] = useState({
+    state: '',
+    city: '',
+    area: '',
+    pincode: ''
+  });
+  const [coords, setCoords] = useState({ lat: 12.9716, lon: 77.5946 });
+  const [isLoadingLocation, setIsLoadingLocation] = useState(false);
+
+  const fetchLiveLocation = () => {
+    setIsLoadingLocation(true);
+    if (!navigator.geolocation) {
+      alert("Geolocation is not supported by your browser");
+      setIsLoadingLocation(false);
+      return;
+    }
+
+    navigator.geolocation.getCurrentPosition(
+      async (position) => {
+        try {
+          const { latitude, longitude } = position.coords;
+          const response = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${latitude}&lon=${longitude}`);
+          const data = await response.json();
+          
+          if (data && data.address) {
+            setCoords({ lat: latitude, lon: longitude });
+            setLocationData({
+              state: data.address.state || '',
+              city: data.address.city || data.address.town || data.address.county || '',
+              area: data.address.suburb || data.address.neighbourhood || data.address.residential || data.address.village || data.address.road || '',
+              pincode: data.address.postcode || ''
+            });
+          }
+        } catch (error) {
+          console.error("Error fetching location details:", error);
+          alert("Could not fetch address details.");
+        } finally {
+          setIsLoadingLocation(false);
+        }
+      },
+      (error) => {
+        console.error("Error getting location:", error);
+        alert("Please allow location access to use this feature.");
+        setIsLoadingLocation(false);
+      }
+    );
+  };
 
   return (
     <div className="flex min-h-screen flex-col bg-white font-sans px-6 py-6 pb-32" style={{fontFamily:"'Inter', sans-serif"}}>
@@ -23,39 +71,7 @@ const LocationPage = () => {
         </button>
 
         {/* Stepper */}
-        <div className="flex items-center justify-between mb-10 relative px-2">
-          {/* Connecting Line */}
-          <div className="absolute top-4 left-6 right-6 h-[3px] bg-[#F8FAFC] -z-10">
-            <div className="h-full bg-[#F59E0B] w-3/4 rounded-full"></div>
-          </div>
-          
-          <div className="flex flex-col items-center gap-2">
-            <div className="w-8 h-8 rounded-full bg-[#F59E0B] text-[#012b39] font-bold flex items-center justify-center shadow-sm">
-              <Check size={16} strokeWidth={3} />
-            </div>
-            <span className="text-[11px] font-medium text-[#012b39]">Basic</span>
-          </div>
-          <div className="flex flex-col items-center gap-2">
-            <div className="w-8 h-8 rounded-full bg-[#F59E0B] text-[#012b39] font-bold flex items-center justify-center shadow-sm">
-              <Check size={16} strokeWidth={3} />
-            </div>
-            <span className="text-[11px] font-medium text-[#012b39]">Gov ID</span>
-          </div>
-          <div className="flex flex-col items-center gap-2">
-            <div className="w-8 h-8 rounded-full bg-[#F59E0B] text-[#012b39] font-bold flex items-center justify-center shadow-sm">
-              <Check size={16} strokeWidth={3} />
-            </div>
-            <span className="text-[11px] font-medium text-[#012b39]">License</span>
-          </div>
-          <div className="flex flex-col items-center gap-2">
-            <div className="w-8 h-8 rounded-full bg-[#F59E0B] text-[#012b39] font-bold flex items-center justify-center text-sm shadow-sm">4</div>
-            <span className="text-[11px] font-medium text-[#012b39]">Location</span>
-          </div>
-          <div className="flex flex-col items-center gap-2">
-            <div className="w-8 h-8 rounded-full bg-[#F1F5F9] text-[#94A3B8] font-bold flex items-center justify-center text-sm">5</div>
-            <span className="text-[11px] font-medium text-[#64748B]">Review</span>
-          </div>
-        </div>
+        <Stepper currentStep={4} />
 
         {/* Title */}
         <div className="mb-8">
@@ -68,14 +84,36 @@ const LocationPage = () => {
         </div>
 
         {/* Map Placeholder */}
-        <div className="relative w-full h-48 bg-[#FEF9C3] rounded-3xl mb-8 flex items-center justify-center overflow-hidden border border-[#FEF08A] shadow-inner" style={{ backgroundImage: 'repeating-linear-gradient(45deg, transparent, transparent 10px, rgba(253,230,138,0.3) 10px, rgba(253,230,138,0.3) 20px)' }}>
-          <div className="w-12 h-12 bg-[#012b39] rounded-full flex items-center justify-center shadow-lg relative z-10">
-            <MapPin size={24} className="text-[#F59E0B]" strokeWidth={2.5} />
-          </div>
-          <button className="absolute bottom-4 right-4 bg-[#012b39] text-white text-[13px] font-bold px-4 py-2 rounded-full flex items-center gap-2 shadow-lg">
-            <Navigation size={14} /> Use current location
+        <div className="relative w-full h-48 bg-[#FEF9C3] rounded-3xl mb-3 flex items-center justify-center overflow-hidden border border-[#FEF08A] shadow-inner" style={!coords ? { backgroundImage: 'repeating-linear-gradient(45deg, transparent, transparent 10px, rgba(253,230,138,0.3) 10px, rgba(253,230,138,0.3) 20px)' } : {}}>
+          {coords ? (
+            <iframe
+              width="100%"
+              height="100%"
+              frameBorder="0"
+              allowFullScreen
+              loading="lazy"
+              className="absolute inset-0 z-0"
+              src={`https://maps.google.com/maps?q=${coords.lat},${coords.lon}&z=15&output=embed`}
+            ></iframe>
+          ) : (
+            <div className="w-12 h-12 bg-[#012b39] rounded-full flex items-center justify-center shadow-lg relative z-10">
+              <MapPin size={24} className="text-[#F59E0B]" strokeWidth={2.5} />
+            </div>
+          )}
+          <button 
+            type="button"
+            onClick={fetchLiveLocation}
+            disabled={isLoadingLocation}
+            className="absolute bottom-4 right-4 bg-[#012b39] text-white text-[13px] px-4 py-2 rounded-full flex items-center gap-2 shadow-lg disabled:opacity-70 transition-opacity z-10"
+          >
+            {isLoadingLocation ? <Loader2 size={14} className="animate-spin" /> : <Navigation size={14} />} 
+            {isLoadingLocation ? 'Fetching...' : 'Use current location'}
           </button>
         </div>
+
+        <p className="text-[13px] text-[#64748B] mb-8 px-1">
+          Tip: tap the map or drag the pin to fine-tune your location.
+        </p>
 
         <form className="space-y-5">
           <div className="flex gap-4">
@@ -84,9 +122,10 @@ const LocationPage = () => {
               <div className="flex rounded-xl border border-[#E2E8F0] overflow-hidden bg-white focus-within:border-[#94A3B8] transition-colors">
                 <input
                   type="text"
-                  className="w-full px-4 py-3 outline-none text-[15px] text-[#012b39]"
-                  placeholder="Karnataka"
-                  defaultValue="Karnataka"
+                  className="w-full px-4 py-2 outline-none text-[15px] text-[#012b39]"
+                  placeholder="State"
+                  value={locationData.state}
+                  onChange={(e) => setLocationData({ ...locationData, state: e.target.value })}
                 />
               </div>
             </div>
@@ -95,9 +134,10 @@ const LocationPage = () => {
               <div className="flex rounded-xl border border-[#E2E8F0] overflow-hidden bg-white focus-within:border-[#94A3B8] transition-colors">
                 <input
                   type="text"
-                  className="w-full px-4 py-3 outline-none text-[15px] text-[#012b39]"
-                  placeholder="Bengaluru"
-                  defaultValue="Bengaluru"
+                  className="w-full px-4 py-2 outline-none text-[15px] text-[#012b39]"
+                  placeholder="City"
+                  value={locationData.city}
+                  onChange={(e) => setLocationData({ ...locationData, city: e.target.value })}
                 />
               </div>
             </div>
@@ -108,9 +148,10 @@ const LocationPage = () => {
             <div className="flex rounded-xl border border-[#E2E8F0] overflow-hidden bg-white focus-within:border-[#94A3B8] transition-colors">
               <input
                 type="text"
-                className="w-full px-4 py-3 outline-none text-[15px] text-[#012b39]"
-                placeholder="Indiranagar"
-                defaultValue="Indiranagar"
+                className="w-full px-4 py-2 outline-none text-[15px] text-[#012b39]"
+                placeholder="Area"
+                value={locationData.area}
+                onChange={(e) => setLocationData({ ...locationData, area: e.target.value })}
               />
             </div>
           </div>
@@ -120,26 +161,25 @@ const LocationPage = () => {
             <div className="flex rounded-xl border border-[#E2E8F0] overflow-hidden bg-white focus-within:border-[#94A3B8] transition-colors">
               <input
                 type="text"
-                className="w-full px-4 py-3 outline-none text-[15px] text-[#012b39]"
-                placeholder="560038"
-                defaultValue="560038"
+                className="w-full px-4 py-2 outline-none text-[15px] text-[#012b39]"
+                placeholder="Pincode"
+                value={locationData.pincode}
+                onChange={(e) => setLocationData({ ...locationData, pincode: e.target.value })}
               />
             </div>
           </div>
         </form>
-      </motion.div>
 
-      {/* Floating Action Button */}
-      <div className="fixed bottom-0 left-0 right-0 p-6 bg-gradient-to-t from-white via-white to-transparent pb-8">
-        <div className="max-w-md mx-auto">
+        {/* Action Button */}
+        <div className="mt-8 pb-8">
           <button
             onClick={() => navigate('/review')}
-            className="w-full rounded-full py-[16px] text-[17px] font-bold transition-all bg-[#012b39] hover:bg-[#011c26] text-white active:scale-[0.98] shadow-lg flex items-center justify-center gap-2"
+            className="w-full rounded-full py-[12px] text-[15px] transition-all bg-[#012b39] hover:bg-[#011c26] text-white active:scale-[0.98] shadow-lg flex items-center justify-center gap-2"
           >
-            Review details <ArrowRight size={20} strokeWidth={2.5} />
+            Review details <ArrowRight size={18} />
           </button>
         </div>
-      </div>
+      </motion.div>
     </div>
   );
 };
