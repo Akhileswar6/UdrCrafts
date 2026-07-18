@@ -39,45 +39,45 @@ const Verification = () => {
         className="w-full max-w-md mx-auto flex flex-col items-center"
       >
         {/* Shield Icon Area */}
-        <div className="relative mb-10">
+        <div className="relative mb-8">
           <div className="absolute inset-0 border-[3px] border-dashed border-[#FCD34D] rounded-full animate-[spin_10s_linear_infinite]"></div>
-          <div className="w-[100px] h-[100px] bg-[#F59E0B] rounded-full flex items-center justify-center m-2 shadow-lg shadow-[#F59E0B]/20">
-            <Shield size={44} className="text-[#012b39]" strokeWidth={2.5} />
+          <div className="w-[80px] h-[80px] bg-[#F59E0B] rounded-full flex items-center justify-center m-2 shadow-lg shadow-[#F59E0B]/20">
+            <Shield size={36} className="text-[#012b39]" strokeWidth={2.5} />
           </div>
         </div>
 
         {/* Title */}
-        <div className="text-center mb-10">
-          <h1 className="text-[28px] font-bold text-[#012b39] tracking-tight mb-2">
+        <div className="text-center mb-8">
+          <h1 className="text-[24px] font-bold text-[#012b39] tracking-tight mb-2">
             Verifying your details
           </h1>
-          <p className="text-[16px] text-[#64748B]">
+          <p className="text-[14px] text-[#64748B]">
             Sit tight — this only takes a moment.
           </p>
         </div>
 
         {/* Status Card */}
-        <div className="w-full bg-white border border-[#E2E8F0] rounded-3xl p-6 shadow-sm mb-10">
+        <div className="w-full bg-white border border-[#E2E8F0] rounded-2xl p-5 shadow-sm mb-8">
           <div className="space-y-4">
             {steps.map((step, index) => {
               const isCompleted = index < currentStep;
               const isCurrent = index === currentStep;
               
               return (
-                <div key={index} className="flex items-center gap-4">
+                <div key={index} className="flex items-center gap-3">
                   {isCompleted ? (
-                    <div className="w-6 h-6 rounded-full bg-[#22C55E] flex items-center justify-center shrink-0">
-                      <Check size={14} className="text-white" strokeWidth={3} />
+                    <div className="w-5 h-5 rounded-full bg-[#22C55E] flex items-center justify-center shrink-0">
+                      <Check size={12} className="text-white" strokeWidth={3} />
                     </div>
                   ) : isCurrent ? (
-                    <div className="w-6 h-6 shrink-0">
-                      <Loader2 size={24} className="text-[#F59E0B] animate-spin" strokeWidth={2.5} />
+                    <div className="w-5 h-5 shrink-0 flex items-center justify-center">
+                      <Loader2 size={18} className="text-[#F59E0B] animate-spin" strokeWidth={2.5} />
                     </div>
                   ) : (
-                    <div className="w-6 h-6 rounded-full border-2 border-[#E2E8F0] shrink-0"></div>
+                    <div className="w-5 h-5 rounded-full border-2 border-[#E2E8F0] shrink-0"></div>
                   )}
                   
-                  <span className={`text-[15px] font-medium transition-colors ${isCompleted ? 'text-[#012b39]' : isCurrent ? 'text-[#012b39] font-bold' : 'text-[#94A3B8]'}`}>
+                  <span className={`text-[14px] font-medium transition-colors ${isCompleted ? 'text-[#012b39]' : isCurrent ? 'text-[#012b39] font-bold' : 'text-[#94A3B8]'}`}>
                     {step}
                   </span>
                 </div>
