@@ -1,10 +1,17 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ArrowLeft, ArrowRight, UploadCloud, Check } from 'lucide-react';
+import { ArrowLeft, ArrowRight, UploadCloud, Check, X, Loader2 } from 'lucide-react';
 import { motion } from 'framer-motion';
+import Stepper from '../components/Stepper';
 
 const DocumentUpload = () => {
   const navigate = useNavigate();
+  const [aadhaarData, setAadhaarData] = useState({ number: '', front: null, back: null });
+  const [panData, setPanData] = useState({ number: '', image: null });
+  const [isAadhaarVerified, setIsAadhaarVerified] = useState(false);
+  const [isAadhaarChecking, setIsAadhaarChecking] = useState(false);
+  const [isPanVerified, setIsPanVerified] = useState(false);
+  const [isPanChecking, setIsPanChecking] = useState(false);
 
   return (
     <div className="flex min-h-screen flex-col bg-white font-sans px-6 py-6 pb-32" style={{fontFamily:"'Inter', sans-serif"}}>
@@ -23,35 +30,7 @@ const DocumentUpload = () => {
         </button>
 
         {/* Stepper */}
-        <div className="flex items-center justify-between mb-10 relative px-2">
-          {/* Connecting Line */}
-          <div className="absolute top-4 left-6 right-6 h-[3px] bg-[#F8FAFC] -z-10">
-            <div className="h-full bg-[#F59E0B] w-1/4 rounded-full"></div>
-          </div>
-          
-          <div className="flex flex-col items-center gap-2">
-            <div className="w-8 h-8 rounded-full bg-[#F59E0B] text-[#012b39] font-bold flex items-center justify-center shadow-sm">
-              <Check size={16} strokeWidth={3} />
-            </div>
-            <span className="text-[11px] font-medium text-[#012b39]">Basic</span>
-          </div>
-          <div className="flex flex-col items-center gap-2">
-            <div className="w-8 h-8 rounded-full bg-[#F59E0B] text-[#012b39] font-bold flex items-center justify-center text-sm shadow-sm">2</div>
-            <span className="text-[11px] font-medium text-[#012b39]">Gov ID</span>
-          </div>
-          <div className="flex flex-col items-center gap-2">
-            <div className="w-8 h-8 rounded-full bg-[#F1F5F9] text-[#94A3B8] font-bold flex items-center justify-center text-sm">3</div>
-            <span className="text-[11px] font-medium text-[#64748B]">License</span>
-          </div>
-          <div className="flex flex-col items-center gap-2">
-            <div className="w-8 h-8 rounded-full bg-[#F1F5F9] text-[#94A3B8] font-bold flex items-center justify-center text-sm">4</div>
-            <span className="text-[11px] font-medium text-[#64748B]">Location</span>
-          </div>
-          <div className="flex flex-col items-center gap-2">
-            <div className="w-8 h-8 rounded-full bg-[#F1F5F9] text-[#94A3B8] font-bold flex items-center justify-center text-sm">5</div>
-            <span className="text-[11px] font-medium text-[#64748B]">Review</span>
-          </div>
-        </div>
+        <Stepper currentStep={2} />
 
         {/* Title */}
         <div className="mb-8">
@@ -68,19 +47,27 @@ const DocumentUpload = () => {
           <div className="border border-[#E2E8F0] rounded-2xl p-5 space-y-4">
             <div className="flex justify-between items-center mb-1">
               <h3 className="text-[16px] font-bold text-[#012b39]">Aadhaar Card</h3>
-              <div className="bg-[#DCFCE7] text-[#15803D] px-2 py-1 rounded-md text-[11px] font-bold flex items-center gap-1">
-                <Check size={12} strokeWidth={3} /> Verified
-              </div>
+              {isAadhaarChecking ? (
+                <div className="bg-[#FEF9C3] text-[#CA8A04] px-2 py-1 rounded-md text-[11px] font-medium flex items-center gap-1">
+                  <Loader2 size={12} className="animate-spin" /> Checking...
+                </div>
+              ) : isAadhaarVerified ? (
+                <div className="bg-[#DCFCE7] text-[#15803D] px-2 py-1 rounded-md text-[11px] font-medium flex items-center gap-1">
+                  <Check size={12}/> Verified
+                </div>
+              ) : null}
             </div>
 
             <div className="space-y-1.5">
               <label className="block text-[13px] text-[#012b39] font-medium">Aadhaar number</label>
-              <div className="flex rounded-xl border border-[#E2E8F0] overflow-hidden bg-white">
+              <div className="flex rounded-xl border border-[#E2E8F0] overflow-hidden bg-white focus-within:border-[#94A3B8] transition-colors">
                 <input
                   type="text"
-                  className="w-full px-4 py-3 outline-none text-[15px] text-[#012b39]"
-                  placeholder="347437676342"
-                  defaultValue="347437676342"
+                  maxLength={12}
+                  value={aadhaarData.number}
+                  onChange={(e) => setAadhaarData({ ...aadhaarData, number: e.target.value.replace(/\D/g, '') })}
+                  className="w-full px-4 py-2 outline-none text-[15px] text-[#012b39]"
+                  placeholder="12-Digit Aadhaar"
                 />
               </div>
             </div>
@@ -88,74 +75,161 @@ const DocumentUpload = () => {
             <div className="flex gap-3">
               <div className="flex-1 space-y-1.5">
                 <label className="block text-[13px] text-[#012b39] font-medium">Front</label>
-                <div className="border border-dashed border-[#CBD5E1] rounded-xl p-4 flex flex-col items-center justify-center gap-2 bg-[#F8FAFC] cursor-pointer hover:bg-gray-100 transition">
-                  <UploadCloud size={24} className="text-[#64748B]" />
-                  <div className="text-center">
-                    <p className="text-[12px] text-[#012b39] font-medium">Tap to upload or drag & drop</p>
-                    <p className="text-[10px] text-[#94A3B8]">JPG, PNG or PDF - up to 5MB</p>
+                {aadhaarData.front ? (
+                  <div className="relative w-full h-32 rounded-xl overflow-hidden border border-[#E2E8F0]">
+                    <img src={aadhaarData.front} alt="Aadhaar Front" className="w-full h-full object-cover" />
+                    <button 
+                      type="button"
+                      onClick={() => setAadhaarData({ ...aadhaarData, front: null })}
+                      className="absolute top-2 right-2 w-7 h-7 bg-white rounded-full flex items-center justify-center shadow-md hover:bg-gray-100 transition-colors"
+                    >
+                      <X size={14} className="text-[#012b39]" />
+                    </button>
                   </div>
-                </div>
+                ) : (
+                  <label className="border border-dashed border-[#CBD5E1] bg-[#F8FAFC] hover:bg-gray-100 rounded-xl p-4 flex flex-col items-center justify-center gap-2 cursor-pointer transition h-32">
+                    <input type="file" className="hidden" accept="image/*,.pdf" onChange={(e) => { if (e.target.files.length > 0) setAadhaarData({ ...aadhaarData, front: URL.createObjectURL(e.target.files[0]) }); }} />
+                    <UploadCloud size={24} className="text-[#64748B]" />
+                    <div className="text-center">
+                      <p className="text-[12px] font-medium text-[#012b39]">Tap to upload or drag & drop</p>
+                      <p className="text-[10px] text-[#94A3B8]">JPG, PNG or PDF - up to 5MB</p>
+                    </div>
+                  </label>
+                )}
               </div>
               <div className="flex-1 space-y-1.5">
                 <label className="block text-[13px] text-[#012b39] font-medium">Back</label>
-                <div className="border border-dashed border-[#CBD5E1] rounded-xl p-4 flex flex-col items-center justify-center gap-2 bg-[#F8FAFC] cursor-pointer hover:bg-gray-100 transition">
-                  <UploadCloud size={24} className="text-[#64748B]" />
-                  <div className="text-center">
-                    <p className="text-[12px] text-[#012b39] font-medium">Tap to upload or drag & drop</p>
-                    <p className="text-[10px] text-[#94A3B8]">JPG, PNG or PDF - up to 5MB</p>
+                {aadhaarData.back ? (
+                  <div className="relative w-full h-32 rounded-xl overflow-hidden border border-[#E2E8F0]">
+                    <img src={aadhaarData.back} alt="Aadhaar Back" className="w-full h-full object-cover" />
+                    <button 
+                      type="button"
+                      onClick={() => setAadhaarData({ ...aadhaarData, back: null })}
+                      className="absolute top-2 right-2 w-7 h-7 bg-white rounded-full flex items-center justify-center shadow-md hover:bg-gray-100 transition-colors"
+                    >
+                      <X size={14} className="text-[#012b39]" />
+                    </button>
                   </div>
-                </div>
+                ) : (
+                  <label className="border border-dashed border-[#CBD5E1] bg-[#F8FAFC] hover:bg-gray-100 rounded-xl p-4 flex flex-col items-center justify-center gap-2 cursor-pointer transition h-32">
+                    <input type="file" className="hidden" accept="image/*,.pdf" onChange={(e) => { if (e.target.files.length > 0) setAadhaarData({ ...aadhaarData, back: URL.createObjectURL(e.target.files[0]) }); }} />
+                    <UploadCloud size={24} className="text-[#64748B]" />
+                    <div className="text-center">
+                      <p className="text-[12px] font-medium text-[#012b39]">Tap to upload or drag & drop</p>
+                      <p className="text-[10px] text-[#94A3B8]">JPG, PNG or PDF - up to 5MB</p>
+                    </div>
+                  </label>
+                )}
               </div>
             </div>
+
+            {!isAadhaarVerified && !isAadhaarChecking && (
+              <button
+                type="button"
+                onClick={() => {
+                  if (aadhaarData.number && aadhaarData.front && aadhaarData.back) {
+                    setIsAadhaarChecking(true);
+                    setTimeout(() => {
+                      setIsAadhaarChecking(false);
+                      setIsAadhaarVerified(true);
+                    }, 1500);
+                  } else {
+                    alert("Please enter Aadhaar number and tap to upload both images first.");
+                  }
+                }}
+                className="w-full py-[8px] rounded-full border border-[#012b39] text-[#012b39] text-[14px] font-medium hover:bg-gray-50 transition"
+              >
+                Verify Aadhaar
+              </button>
+            )}
           </div>
 
           {/* PAN Card Section */}
           <div className="border border-[#E2E8F0] rounded-2xl p-5 space-y-4">
             <div className="flex justify-between items-center mb-1">
               <h3 className="text-[16px] font-bold text-[#012b39]">PAN Card</h3>
-              <div className="bg-[#DCFCE7] text-[#15803D] px-2 py-1 rounded-md text-[11px] font-bold flex items-center gap-1">
-                <Check size={12} strokeWidth={3} /> Verified
-              </div>
+              {isPanChecking ? (
+                <div className="bg-[#FEF9C3] text-[#CA8A04] px-2 py-1 rounded-md text-[11px] font-medium flex items-center gap-1">
+                  <Loader2 size={12} className="animate-spin" /> Checking...
+                </div>
+              ) : isPanVerified ? (
+                <div className="bg-[#DCFCE7] text-[#15803D] px-2 py-1 rounded-md text-[11px] font-medium flex items-center gap-1">
+                  <Check size={12} strokeWidth={3} /> Verified
+                </div>
+              ) : null}
             </div>
 
             <div className="space-y-1.5">
               <label className="block text-[13px] text-[#012b39] font-medium">PAN number</label>
-              <div className="flex rounded-xl border border-[#E2E8F0] overflow-hidden bg-white">
+              <div className="flex rounded-xl border border-[#E2E8F0] overflow-hidden bg-white focus-within:border-[#94A3B8] transition-colors">
                 <input
                   type="text"
-                  className="w-full px-4 py-3 outline-none text-[15px] text-[#012b39]"
+                  value={panData.number}
+                  onChange={(e) => setPanData({ ...panData, number: e.target.value })}
+                  className="w-full px-4 py-2 outline-none text-[15px] text-[#012b39]"
                   placeholder="ABCDE4553Y"
-                  defaultValue="ABCDE4553Y"
                 />
               </div>
             </div>
 
             <div className="space-y-1.5">
               <label className="block text-[13px] text-[#012b39] font-medium">Upload PAN</label>
-              <div className="border border-dashed border-[#CBD5E1] rounded-xl p-6 flex flex-col items-center justify-center gap-2 bg-[#F8FAFC] cursor-pointer hover:bg-gray-100 transition">
-                <UploadCloud size={24} className="text-[#64748B]" />
-                <div className="text-center">
-                  <p className="text-[12px] text-[#012b39] font-medium">Tap to upload or drag & drop</p>
-                  <p className="text-[10px] text-[#94A3B8]">JPG, PNG or PDF - up to 5MB</p>
+              {panData.image ? (
+                <div className="relative w-full h-40 rounded-xl overflow-hidden border border-[#E2E8F0]">
+                  <img src={panData.image} alt="PAN Card" className="w-full h-full object-cover" />
+                  <button 
+                    type="button"
+                    onClick={() => setPanData({ ...panData, image: null })}
+                    className="absolute top-3 right-3 w-8 h-8 bg-white rounded-full flex items-center justify-center shadow-md hover:bg-gray-100 transition-colors"
+                  >
+                    <X size={16} className="text-[#012b39]" />
+                  </button>
                 </div>
-              </div>
+              ) : (
+                <label className="border border-dashed border-[#CBD5E1] bg-[#F8FAFC] hover:bg-gray-100 rounded-xl p-6 flex flex-col items-center justify-center gap-2 cursor-pointer transition h-40">
+                  <input type="file" className="hidden" accept="image/*,.pdf" onChange={(e) => { if (e.target.files.length > 0) setPanData({ ...panData, image: URL.createObjectURL(e.target.files[0]) }); }} />
+                  <UploadCloud size={24} className="text-[#64748B]" />
+                  <div className="text-center">
+                    <p className="text-[12px] font-medium text-[#012b39]">Tap to upload or drag & drop</p>
+                    <p className="text-[10px] text-[#94A3B8]">JPG, PNG or PDF - up to 5MB</p>
+                  </div>
+                </label>
+              )}
             </div>
+
+            {!isPanVerified && !isPanChecking && (
+              <button
+                type="button"
+                onClick={() => {
+                  if (panData.number && panData.image) {
+                    setIsPanChecking(true);
+                    setTimeout(() => {
+                      setIsPanChecking(false);
+                      setIsPanVerified(true);
+                    }, 1500);
+                  } else {
+                    alert("Please enter PAN number and tap to upload the image first.");
+                  }
+                }}
+                className="w-full py-[8px] rounded-full border border-[#012b39] text-[#012b39] text-[14px] font-medium hover:bg-gray-50 transition"
+              >
+                Verify PAN
+              </button>
+            )}
           </div>
 
         </form>
-      </motion.div>
 
-      {/* Floating Action Button */}
-      <div className="fixed bottom-0 left-0 right-0 p-6 bg-gradient-to-t from-white via-white to-transparent pb-8">
-        <div className="max-w-md mx-auto">
+        {/* Action Button */}
+        <div className="mt-8 pb-8">
           <button
             onClick={() => navigate('/license')}
-            className="w-full rounded-full py-[16px] text-[17px] font-bold transition-all bg-[#012b39] hover:bg-[#011c26] text-white active:scale-[0.98] shadow-lg flex items-center justify-center gap-2"
+            className="w-full rounded-full py-[12px] text-[15px] transition-all bg-[#012b39] hover:bg-[#011c26] text-white active:scale-[0.98] shadow-lg flex items-center justify-center gap-2"
           >
-            Next <ArrowRight size={20} strokeWidth={2.5} />
+            Next <ArrowRight size={18} />
           </button>
         </div>
-      </div>
+      </motion.div>
     </div>
   );
 };

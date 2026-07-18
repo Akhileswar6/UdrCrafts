@@ -1,10 +1,14 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ArrowLeft, ArrowRight, UploadCloud, Check } from 'lucide-react';
+import { ArrowLeft, ArrowRight, UploadCloud, Check, X, Loader2 } from 'lucide-react';
 import { motion } from 'framer-motion';
+import Stepper from '../components/Stepper';
 
 const DrivingLicense = () => {
   const navigate = useNavigate();
+  const [licenseData, setLicenseData] = useState({ number: '', expiry: '', front: null, back: null });
+  const [isLicenseVerified, setIsLicenseVerified] = useState(false);
+  const [isLicenseChecking, setIsLicenseChecking] = useState(false);
 
   return (
     <div className="flex min-h-screen flex-col bg-white font-sans px-6 py-6 pb-32" style={{fontFamily:"'Inter', sans-serif"}}>
@@ -23,37 +27,7 @@ const DrivingLicense = () => {
         </button>
 
         {/* Stepper */}
-        <div className="flex items-center justify-between mb-10 relative px-2">
-          {/* Connecting Line */}
-          <div className="absolute top-4 left-6 right-6 h-[3px] bg-[#F8FAFC] -z-10">
-            <div className="h-full bg-[#F59E0B] w-2/4 rounded-full"></div>
-          </div>
-          
-          <div className="flex flex-col items-center gap-2">
-            <div className="w-8 h-8 rounded-full bg-[#F59E0B] text-[#012b39] font-bold flex items-center justify-center shadow-sm">
-              <Check size={16} strokeWidth={3} />
-            </div>
-            <span className="text-[11px] font-medium text-[#012b39]">Basic</span>
-          </div>
-          <div className="flex flex-col items-center gap-2">
-            <div className="w-8 h-8 rounded-full bg-[#F59E0B] text-[#012b39] font-bold flex items-center justify-center shadow-sm">
-              <Check size={16} strokeWidth={3} />
-            </div>
-            <span className="text-[11px] font-medium text-[#012b39]">Gov ID</span>
-          </div>
-          <div className="flex flex-col items-center gap-2">
-            <div className="w-8 h-8 rounded-full bg-[#F59E0B] text-[#012b39] font-bold flex items-center justify-center text-sm shadow-sm">3</div>
-            <span className="text-[11px] font-medium text-[#012b39]">License</span>
-          </div>
-          <div className="flex flex-col items-center gap-2">
-            <div className="w-8 h-8 rounded-full bg-[#F1F5F9] text-[#94A3B8] font-bold flex items-center justify-center text-sm">4</div>
-            <span className="text-[11px] font-medium text-[#64748B]">Location</span>
-          </div>
-          <div className="flex flex-col items-center gap-2">
-            <div className="w-8 h-8 rounded-full bg-[#F1F5F9] text-[#94A3B8] font-bold flex items-center justify-center text-sm">5</div>
-            <span className="text-[11px] font-medium text-[#64748B]">Review</span>
-          </div>
-        </div>
+        <Stepper currentStep={3} />
 
         {/* Title */}
         <div className="mb-8">
@@ -70,31 +44,38 @@ const DrivingLicense = () => {
           <div className="border border-[#E2E8F0] rounded-2xl p-5 space-y-4">
             <div className="flex justify-between items-center mb-2">
               <h3 className="text-[16px] font-bold text-[#012b39]">License details</h3>
-              <div className="bg-[#DCFCE7] text-[#15803D] px-2 py-1 rounded-md text-[11px] font-bold flex items-center gap-1">
-                <Check size={12} strokeWidth={3} /> Verified
-              </div>
+              {isLicenseChecking ? (
+                <div className="bg-[#FEF9C3] text-[#CA8A04] px-2 py-1 rounded-md text-[11px] font-medium flex items-center gap-1">
+                  <Loader2 size={12} className="animate-spin" /> Checking...
+                </div>
+              ) : isLicenseVerified ? (
+                <div className="bg-[#DCFCE7] text-[#15803D] px-2 py-1 rounded-md text-[11px] font-medium flex items-center gap-1">
+                  <Check size={12} strokeWidth={3} /> Verified
+                </div>
+              ) : null}
             </div>
 
             <div className="space-y-1.5">
               <label className="block text-[13px] text-[#012b39] font-medium">License number</label>
-              <div className="flex rounded-xl border border-[#E2E8F0] overflow-hidden bg-white">
+              <div className="flex rounded-xl border border-[#E2E8F0] overflow-hidden bg-white focus-within:border-[#94A3B8] transition-colors">
                 <input
                   type="text"
-                  className="w-full px-4 py-3 outline-none text-[15px] text-[#64748B]"
+                  value={licenseData.number}
+                  onChange={(e) => setLicenseData({ ...licenseData, number: e.target.value })}
+                  className="w-full px-4 py-2 outline-none text-[15px] text-[#012b39]"
                   placeholder="DL-01AB-2024-1234567"
-                  defaultValue="DL-01AB-2024-1234567"
                 />
               </div>
             </div>
 
             <div className="space-y-1.5">
               <label className="block text-[13px] text-[#012b39] font-medium">Expiry date</label>
-              <div className="flex rounded-xl border border-[#E2E8F0] overflow-hidden bg-white">
+              <div className="flex rounded-xl border border-[#E2E8F0] overflow-hidden bg-white focus-within:border-[#94A3B8] transition-colors">
                 <input
-                  type="text"
-                  className="w-full px-4 py-3 outline-none text-[15px] text-[#64748B]"
-                  placeholder="31-07-2026"
-                  defaultValue="31-07-2026"
+                  type="date"
+                  value={licenseData.expiry}
+                  onChange={(e) => setLicenseData({ ...licenseData, expiry: e.target.value })}
+                  className="w-full px-4 py-2 outline-none text-[15px] text-[#012b39]"
                 />
               </div>
             </div>
@@ -102,40 +83,84 @@ const DrivingLicense = () => {
             <div className="flex gap-3 pt-2">
               <div className="flex-1 space-y-1.5">
                 <label className="block text-[13px] text-[#012b39] font-medium">Front</label>
-                <div className="border border-dashed border-[#CBD5E1] rounded-xl p-4 flex flex-col items-center justify-center gap-2 bg-[#F8FAFC] cursor-pointer hover:bg-gray-100 transition">
-                  <UploadCloud size={24} className="text-[#012b39]" />
-                  <div className="text-center">
-                    <p className="text-[12px] text-[#012b39] font-medium">Tap to upload or drag & drop</p>
-                    <p className="text-[10px] text-[#94A3B8]">JPG, PNG or PDF - up to 5MB</p>
+                {licenseData.front ? (
+                  <div className="relative w-full h-32 rounded-xl overflow-hidden border border-[#E2E8F0]">
+                    <img src={licenseData.front} alt="License Front" className="w-full h-full object-cover" />
+                    <button 
+                      type="button"
+                      onClick={() => setLicenseData({ ...licenseData, front: null })}
+                      className="absolute top-2 right-2 w-7 h-7 bg-white rounded-full flex items-center justify-center shadow-md hover:bg-gray-100 transition-colors"
+                    >
+                      <X size={14} className="text-[#012b39]" />
+                    </button>
                   </div>
-                </div>
+                ) : (
+                  <label className="border border-dashed border-[#CBD5E1] rounded-xl p-4 flex flex-col items-center justify-center gap-2 bg-[#F8FAFC] cursor-pointer hover:bg-gray-100 transition h-32">
+                    <input type="file" className="hidden" accept="image/*,.pdf" onChange={(e) => { if (e.target.files.length > 0) setLicenseData({ ...licenseData, front: URL.createObjectURL(e.target.files[0]) }); }} />
+                    <UploadCloud size={24} className="text-[#64748B]" />
+                    <div className="text-center">
+                      <p className="text-[12px] text-[#012b39] font-medium">Tap to upload</p>
+                    </div>
+                  </label>
+                )}
               </div>
               <div className="flex-1 space-y-1.5">
                 <label className="block text-[13px] text-[#012b39] font-medium">Back</label>
-                <div className="border border-dashed border-[#CBD5E1] rounded-xl p-4 flex flex-col items-center justify-center gap-2 bg-[#F8FAFC] cursor-pointer hover:bg-gray-100 transition">
-                  <UploadCloud size={24} className="text-[#012b39]" />
-                  <div className="text-center">
-                    <p className="text-[12px] text-[#012b39] font-medium">Tap to upload or drag & drop</p>
-                    <p className="text-[10px] text-[#94A3B8]">JPG, PNG or PDF - up to 5MB</p>
+                {licenseData.back ? (
+                  <div className="relative w-full h-32 rounded-xl overflow-hidden border border-[#E2E8F0]">
+                    <img src={licenseData.back} alt="License Back" className="w-full h-full object-cover" />
+                    <button 
+                      type="button"
+                      onClick={() => setLicenseData({ ...licenseData, back: null })}
+                      className="absolute top-2 right-2 w-7 h-7 bg-white rounded-full flex items-center justify-center shadow-md hover:bg-gray-100 transition-colors"
+                    >
+                      <X size={14} className="text-[#012b39]" />
+                    </button>
                   </div>
-                </div>
+                ) : (
+                  <label className="border border-dashed border-[#CBD5E1] rounded-xl p-4 flex flex-col items-center justify-center gap-2 bg-[#F8FAFC] cursor-pointer hover:bg-gray-100 transition h-32">
+                    <input type="file" className="hidden" accept="image/*,.pdf" onChange={(e) => { if (e.target.files.length > 0) setLicenseData({ ...licenseData, back: URL.createObjectURL(e.target.files[0]) }); }} />
+                    <UploadCloud size={24} className="text-[#64748B]" />
+                    <div className="text-center">
+                      <p className="text-[12px] text-[#012b39] font-medium">Tap to upload</p>
+                    </div>
+                  </label>
+                )}
               </div>
             </div>
+
+            {!isLicenseVerified && !isLicenseChecking && (
+              <button
+                type="button"
+                onClick={() => {
+                  if (licenseData.number && licenseData.expiry && licenseData.front && licenseData.back) {
+                    setIsLicenseChecking(true);
+                    setTimeout(() => {
+                      setIsLicenseChecking(false);
+                      setIsLicenseVerified(true);
+                    }, 1500);
+                  } else {
+                    alert("Please enter license details and tap to upload both images first.");
+                  }
+                }}
+                className="w-full py-[8px] rounded-full border border-[#012b39] text-[#012b39] text-[14px] font-medium hover:bg-gray-50 transition"
+              >
+                Verify License
+              </button>
+            )}
           </div>
         </form>
-      </motion.div>
 
-      {/* Floating Action Button */}
-      <div className="fixed bottom-0 left-0 right-0 p-6 bg-gradient-to-t from-white via-white to-transparent pb-8">
-        <div className="max-w-md mx-auto">
+        {/* Action Button */}
+        <div className="mt-8 pb-8">
           <button
             onClick={() => navigate('/location')}
-            className="w-full rounded-full py-[16px] text-[17px] font-bold transition-all bg-[#012b39] hover:bg-[#011c26] text-white active:scale-[0.98] shadow-lg flex items-center justify-center gap-2"
+            className="w-full rounded-full py-[12px] text-[15px] transition-all bg-[#012b39] hover:bg-[#011c26] text-white active:scale-[0.98] shadow-lg flex items-center justify-center gap-2"
           >
-            Next <ArrowRight size={20} strokeWidth={2.5} />
+            Next <ArrowRight size={18} />
           </button>
         </div>
-      </div>
+      </motion.div>
     </div>
   );
 };
