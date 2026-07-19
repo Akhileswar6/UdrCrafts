@@ -2,7 +2,7 @@ import React, { Suspense } from 'react';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 
-// Lazy loading pages
+
 const Splash = React.lazy(() => import('./pages/Splash'));
 const Login = React.lazy(() => import('./pages/Login'));
 const OTP = React.lazy(() => import('./pages/OTP'));
@@ -15,6 +15,7 @@ const Review = React.lazy(() => import('./pages/Review'));
 const Verification = React.lazy(() => import('./pages/Verification'));
 const Success = React.lazy(() => import('./pages/Success'));
 const Dashboard = React.lazy(() => import('./pages/Dashboard'));
+const Profile = React.lazy(() => import('./pages/Profile'));
 
 const queryClient = new QueryClient();
 
@@ -37,6 +38,7 @@ function App() {
               <Route path="/verification" element={<Verification />} />
               <Route path="/success" element={<Success />} />
               <Route path="/dashboard" element={<Dashboard />} />
+              <Route path="/profile" element={<Profile />} />
               <Route path="*" element={<Navigate to="/" replace />} />
             </Routes>
           </Suspense>

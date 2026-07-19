@@ -12,11 +12,9 @@ const steps = [
 const Stepper = ({ currentStep }) => {
   return (
     <div className="flex items-center justify-between mb-10 relative px-2">
-      {/* Background Line */}
-      <div className="absolute top-4 left-8 right-8 h-1 bg-[#E2E8F0]"></div>
+            <div className="absolute top-4 left-8 right-8 h-1 bg-[#E2E8F0]"></div>
       
-      {/* Active Progress Line */}
-      <div 
+            <div 
         className="absolute top-4 left-8 h-1 bg-[#F8B500] transition-all duration-300 ease-in-out"
         style={{ width: `calc((100% - 4rem) * ${(currentStep - 1) / 4})` }}
       ></div>
