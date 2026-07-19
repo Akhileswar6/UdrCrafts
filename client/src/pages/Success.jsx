@@ -2,9 +2,12 @@ import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Check, Copy, ArrowRight } from 'lucide-react';
 import { motion } from 'framer-motion';
+import useStore from '../store/useStore';
 
 const Success = () => {
   const navigate = useNavigate();
+  const { basicInfo } = useStore();
+  const firstName = basicInfo.fullName ? basicInfo.fullName.split(' ')[0] : 'Partner';
 
   const handleCopy = () => {
     navigator.clipboard.writeText('SP-414906');
@@ -19,26 +22,23 @@ const Success = () => {
         transition={{ duration: 0.5 }}
         className="w-full max-w-md mx-auto flex flex-col items-center text-center"
       >
-        {/* Success Checkmark */}
-        <div className="w-[80px] h-[80px] bg-[#22C55E] rounded-full flex items-center justify-center mb-6 shadow-xl shadow-[#22C55E]/20">
+                <div className="w-[80px] h-[80px] bg-[#22C55E] rounded-full flex items-center justify-center mb-6 shadow-xl shadow-[#22C55E]/20">
           <Check size={40} className="text-white" strokeWidth={3.5} />
         </div>
 
-        {/* Title */}
-        <h1 className="text-[28px] font-extrabold text-[#012b39] tracking-tight mb-3 leading-tight">
+                <h1 className="text-[28px] font-bold text-[#012b39] tracking-tight mb-3 leading-tight">
           Profile created!
         </h1>
         <p className="text-[15px] text-[#64748B] mb-8 leading-relaxed px-2">
-          Welcome to the network, Akhileswar. Your account is verified and ready to go.
+          Welcome to the network, {firstName}. Your account is verified and ready to go.
         </p>
 
-        {/* Partner ID Card */}
-        <div className="w-full bg-[#FFFCF5] border border-[#E2E8F0] rounded-[24px] p-5 mb-8 shadow-sm relative overflow-hidden">
-          <p className="text-[12px] font-bold text-[#94A3B8] tracking-wider uppercase mb-2">
+                <div className="w-full bg-[#FFFCF5] border border-[#E2E8F0] rounded-[24px] p-5 mb-8 shadow-sm relative overflow-hidden">
+          <p className="text-[12px] font-medium text-[#94A3B8] tracking-wider uppercase mb-2">
             Your Partner ID
           </p>
           <div className="flex items-center justify-between">
-            <span className="text-[24px] font-extrabold text-[#012b39] tracking-tight">
+            <span className="text-[24px] font-medium text-[#012b39] tracking-tight">
               SP-414906
             </span>
             <button 
@@ -50,18 +50,17 @@ const Success = () => {
           </div>
         </div>
 
-        {/* Actions */}
-        <div className="w-full space-y-4">
+                <div className="w-full space-y-4">
           <button
             onClick={() => navigate('/dashboard')}
-            className="w-full rounded-full py-[14px] text-[15px] font-bold transition-all bg-[#012b39] hover:bg-[#011c26] text-white active:scale-[0.98] shadow-lg flex items-center justify-center gap-2"
+            className="w-full rounded-full py-[10px] text-[15px]  transition-all bg-[#012b39] hover:bg-[#011c26] text-white active:scale-[0.98] shadow-lg flex items-center justify-center gap-2"
           >
-            Go to Dashboard <ArrowRight size={18} strokeWidth={2.5} />
+            Go to Dashboard <ArrowRight size={16}  />
           </button>
           
           <button 
             onClick={() => navigate('/')}
-            className="text-[15px] text-[#64748B] font-medium underline hover:text-[#012b39] transition-colors"
+            className="text-[15px] text-[#64748B] font-[15px] hover:text-[#012b39] transition-colors"
           >
             Back to home
           </button>
