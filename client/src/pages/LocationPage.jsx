@@ -1,19 +1,17 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ArrowLeft, ArrowRight, MapPin, Check, Navigation, Loader2 } from 'lucide-react';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import Stepper from '../components/Stepper';
+import useStore from '../store/useStore';
 
 const LocationPage = () => {
   const navigate = useNavigate();
-  const [locationData, setLocationData] = useState({
-    state: '',
-    city: '',
-    area: '',
-    pincode: ''
-  });
+  const { location, setLocation } = useStore();
+  const [locationData, setLocationData] = useState(location);
   const [coords, setCoords] = useState({ lat: 12.9716, lon: 77.5946 });
   const [isLoadingLocation, setIsLoadingLocation] = useState(false);
+  const [showToast, setShowToast] = useState(false);
 
   const fetchLiveLocation = () => {
     setIsLoadingLocation(true);
@@ -38,6 +36,8 @@ const LocationPage = () => {
               area: data.address.suburb || data.address.neighbourhood || data.address.residential || data.address.village || data.address.road || '',
               pincode: data.address.postcode || ''
             });
+            setShowToast(true);
+            setTimeout(() => setShowToast(false), 3000);
           }
         } catch (error) {
           console.error("Error fetching location details:", error);
@@ -62,19 +62,13 @@ const LocationPage = () => {
         transition={{ duration: 0.4 }}
         className="w-full max-w-md mx-auto"
       >
-        {/* Back Button */}
-        <button 
-          onClick={() => navigate(-1)}
-          className="w-10 h-10 rounded-full border border-gray-200 flex items-center justify-center text-[#012b39] mb-8 hover:bg-gray-50 transition"
-        >
-          <ArrowLeft size={20} strokeWidth={2} />
-        </button>
+                  <button onClick={() => navigate(-1)} className="w-24 h-11 flex items-center justify-center rounded-full hover:bg-gray-50 transition-colors -ml-4 gap-1 mb-4">
+            <ArrowLeft size={16} className="text-[#475569]"  /> <span className='text-[#475569] text-[14px]'>Back</span>
+          </button>
 
-        {/* Stepper */}
-        <Stepper currentStep={4} />
+                <Stepper currentStep={4} />
 
-        {/* Title */}
-        <div className="mb-8">
+                <div className="mb-8">
           <h1 className="text-[28px] font-bold text-[#012b39] tracking-tight mb-2">
             Your service location
           </h1>
@@ -83,8 +77,7 @@ const LocationPage = () => {
           </p>
         </div>
 
-        {/* Map Placeholder */}
-        <div className="relative w-full h-48 bg-[#FEF9C3] rounded-3xl mb-3 flex items-center justify-center overflow-hidden border border-[#FEF08A] shadow-inner" style={!coords ? { backgroundImage: 'repeating-linear-gradient(45deg, transparent, transparent 10px, rgba(253,230,138,0.3) 10px, rgba(253,230,138,0.3) 20px)' } : {}}>
+                <div className="relative w-full h-48 bg-[#FEF9C3] rounded-3xl mb-3 flex items-center justify-center overflow-hidden border border-[#FEF08A] shadow-inner" style={!coords ? { backgroundImage: 'repeating-linear-gradient(45deg, transparent, transparent 10px, rgba(253,230,138,0.3) 10px, rgba(253,230,138,0.3) 20px)' } : {}}>
           {coords ? (
             <iframe
               width="100%"
@@ -170,15 +163,30 @@ const LocationPage = () => {
           </div>
         </form>
 
-        {/* Action Button */}
-        <div className="mt-8 pb-8">
+                <div className="mt-8 pb-8">
           <button
-            onClick={() => navigate('/review')}
+            onClick={() => {
+              setLocation(locationData);
+              navigate('/review');
+            }}
             className="w-full rounded-full py-[12px] text-[15px] transition-all bg-[#012b39] hover:bg-[#011c26] text-white active:scale-[0.98] shadow-lg flex items-center justify-center gap-2"
           >
             Review details <ArrowRight size={18} />
           </button>
         </div>
+
+                <AnimatePresence>
+          {showToast && (
+            <motion.div
+              initial={{ opacity: 0, y: 50, x: '-50%' }}
+              animate={{ opacity: 1, y: 0, x: '-50%' }}
+              exit={{ opacity: 0, y: 50, x: '-50%' }}
+              className="fixed bottom-10 left-1/2 bg-[#22C55E]/70 backdrop-blur-md border border-white/40 text-white px-4 py-2 rounded-full shadow-[0_8px_30px_rgb(0,0,0,0.12)] text-[14px] z-50 whitespace-nowrap flex items-center gap-2"
+            >
+              📍 Location detected successfully
+            </motion.div>
+          )}
+        </AnimatePresence>
       </motion.div>
     </div>
   );

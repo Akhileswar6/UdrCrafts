@@ -3,16 +3,12 @@ import { useNavigate } from 'react-router-dom';
 import { ArrowLeft, ArrowRight, Calendar, ChevronDown } from 'lucide-react';
 import { motion } from 'framer-motion';
 import Stepper from '../components/Stepper';
+import useStore from '../store/useStore';
 
 const BasicInfo = () => {
   const navigate = useNavigate();
-  const [formData, setFormData] = useState({
-    fullName: '',
-    email: '',
-    dob: '',
-    gender: 'Male',
-    emergencyContact: ''
-  });
+  const { basicInfo, setBasicInfo } = useStore();
+  const [formData, setFormData] = useState(basicInfo);
   const [errors, setErrors] = useState({});
 
   const handleChange = (e) => {
@@ -36,6 +32,7 @@ const BasicInfo = () => {
       return;
     }
     setErrors({});
+    setBasicInfo(formData);
     navigate('/documents');
   };
 
@@ -47,16 +44,13 @@ const BasicInfo = () => {
         transition={{ duration: 0.4 }}
         className="w-full max-w-md mx-auto"
       >
-        {/* Back Button */}
-          <button onClick={() => navigate(-1)} className="w-24 h-11 flex items-center justify-center rounded-full hover:bg-gray-50 transition-colors -ml-4 gap-1 mb-4">
+                  <button onClick={() => navigate(-1)} className="w-24 h-11 flex items-center justify-center rounded-full hover:bg-gray-50 transition-colors -ml-4 gap-1 mb-4">
             <ArrowLeft size={16} className="text-[#475569]"  /> <span className='text-[#475569] text-[14px]'>Back</span>
           </button>
 
-        {/* Stepper */}
-        <Stepper currentStep={1} />
+                <Stepper currentStep={1} />
 
-        {/* Title */}
-        <div className="mb-8">
+                <div className="mb-8">
           <h1 className="text-[28px] font-bold text-[#012b39] tracking-tight mb-2">
             Basic information
           </h1>
@@ -65,11 +59,9 @@ const BasicInfo = () => {
           </p>
         </div>
 
-        {/* Form */}
-        <form onSubmit={handleNext} className="space-y-5">
+                <form onSubmit={handleNext} className="space-y-5">
           
-          {/* Full Name */}
-          <div className="space-y-1.5">
+                    <div className="space-y-1.5">
             <label className="block text-[14px] text-[#012b39] font-medium">
               Full name
             </label>
@@ -87,8 +79,7 @@ const BasicInfo = () => {
             {errors.fullName && <p className="text-red-400 text-[12px]">{errors.fullName}</p>}
           </div>
 
-          {/* Email */}
-          <div className="space-y-1.5">
+                    <div className="space-y-1.5">
             <label className="block text-[14px] text-[#012b39] font-medium">
               Email
             </label>
@@ -106,8 +97,7 @@ const BasicInfo = () => {
             {errors.email && <p className="text-red-400 text-[12px]">{errors.email}</p>}
           </div>
 
-          {/* DOB and Gender Row */}
-          <div className="flex gap-4">
+                    <div className="flex gap-4">
             <div className="space-y-1.5 flex-1">
               <label className="block text-[14px] text-[#012b39] font-medium">
                 Date of birth
@@ -130,31 +120,33 @@ const BasicInfo = () => {
               <label className="block text-[14px] text-[#012b39] font-medium mb-1">
                 Gender
               </label>
-              <div className="flex gap-2">
-                {['Male', 'Female', 'Other'].map((g) => (
-                  <button
-                    type="button"
-                    key={g}
-                    onClick={() => {
-                      setFormData({ ...formData, gender: g });
-                      if (errors.gender) setErrors({ ...errors, gender: '' });
-                    }}
-                    className={`flex-1 py-[9px] rounded-xl border text-[13px] font-medium transition-colors ${
-                      formData.gender === g
-                        ? 'border-[#012b39] bg-[#012b39] text-white'
-                        : errors.gender ? 'border-red-500 bg-white text-red-500' : 'border-[#E2E8F0] bg-white text-[#64748B] hover:border-[#94A3B8]'
-                    }`}
-                  >
-                    {g}
-                  </button>
-                ))}
+              <div className={`relative flex rounded-xl border ${errors.gender ? 'border-red-500' : 'border-[#E2E8F0]'} overflow-hidden focus-within:border-[#94A3B8] transition-colors bg-white items-center`}>
+                <select
+                  name="gender"
+                  value={formData.gender}
+                  onChange={(e) => {
+                    handleChange(e);
+                    if (errors.gender) setErrors({ ...errors, gender: '' });
+                  }}
+                  className={`w-full px-4 py-2 outline-none text-[15px] bg-transparent appearance-none cursor-pointer ${!formData.gender ? 'text-[#94A3B8]' : 'text-[#012b39]'}`}
+                  required
+                >
+                  <option value="" disabled>Select gender</option>
+                  <option value="Male" className="text-[#012b39]">Male</option>
+                  <option value="Female" className="text-[#012b39]">Female</option>
+                  <option value="Other" className="text-[#012b39]">Other</option>
+                </select>
+                <div className="absolute right-3 pointer-events-none">
+                  <svg width="12" height="12" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M2.5 4.5L6 8L9.5 4.5" stroke="#64748B" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+                  </svg>
+                </div>
               </div>
               {errors.gender && <p className="text-red-400 text-[12px]">{errors.gender}</p>}
             </div>
           </div>
 
-          {/* Emergency Contact */}
-          <div className="space-y-1.5">
+                    <div className="space-y-1.5">
             <label className="block text-[14px] text-[#012b39] font-medium">
               Emergency contact
             </label>
@@ -181,8 +173,7 @@ const BasicInfo = () => {
 
         </form>
 
-        {/* Action Button */}
-        <div className="mt-12 pb-8">
+                <div className="mt-12 pb-8">
           <button
             onClick={handleNext}
             className="w-full rounded-full py-[12px] text-[15px] transition-all bg-[#012b39] hover:bg-[#011c26] text-white active:scale-[0.98] shadow-lg flex items-center justify-center gap-2"
