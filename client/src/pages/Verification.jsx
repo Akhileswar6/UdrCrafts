@@ -38,16 +38,14 @@ const Verification = () => {
         transition={{ duration: 0.5 }}
         className="w-full max-w-md mx-auto flex flex-col items-center"
       >
-        {/* Shield Icon Area */}
-        <div className="relative mb-8">
+                <div className="relative mb-8">
           <div className="absolute inset-0 border-[3px] border-dashed border-[#FCD34D] rounded-full animate-[spin_10s_linear_infinite]"></div>
           <div className="w-[80px] h-[80px] bg-[#F59E0B] rounded-full flex items-center justify-center m-2 shadow-lg shadow-[#F59E0B]/20">
             <Shield size={36} className="text-[#012b39]" strokeWidth={2.5} />
           </div>
         </div>
 
-        {/* Title */}
-        <div className="text-center mb-8">
+                <div className="text-center mb-8">
           <h1 className="text-[24px] font-bold text-[#012b39] tracking-tight mb-2">
             Verifying your details
           </h1>
@@ -56,8 +54,7 @@ const Verification = () => {
           </p>
         </div>
 
-        {/* Status Card */}
-        <div className="w-full bg-white border border-[#E2E8F0] rounded-2xl p-5 shadow-sm mb-8">
+                <div className="w-full bg-white border border-[#E2E8F0] rounded-2xl p-5 shadow-sm mb-8">
           <div className="space-y-4">
             {steps.map((step, index) => {
               const isCompleted = index < currentStep;
@@ -86,8 +83,7 @@ const Verification = () => {
           </div>
         </div>
 
-        {/* Progress Bar */}
-        <div className="w-full h-1.5 bg-[#F1F5F9] rounded-full overflow-hidden">
+                <div className="w-full h-1.5 bg-[#F1F5F9] rounded-full overflow-hidden">
           <motion.div 
             className="h-full bg-[#F59E0B] rounded-full"
             initial={{ width: '0%' }}

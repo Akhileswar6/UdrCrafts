@@ -1,17 +1,35 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ArrowLeft, ArrowRight, UploadCloud, Check, X, Loader2 } from 'lucide-react';
+import { ArrowLeft, ArrowRight, UploadCloud, ShieldCheck, X, Loader2 } from 'lucide-react';
 import { motion } from 'framer-motion';
 import Stepper from '../components/Stepper';
+import useStore from '../store/useStore';
 
 const DocumentUpload = () => {
   const navigate = useNavigate();
-  const [aadhaarData, setAadhaarData] = useState({ number: '', front: null, back: null });
-  const [panData, setPanData] = useState({ number: '', image: null });
+  const { documents, setDocuments } = useStore();
+  const [aadhaarData, setAadhaarData] = useState({ number: documents.aadhaar || '', front: null, back: null });
+  const [panData, setPanData] = useState({ number: documents.pan || '', image: null });
   const [isAadhaarVerified, setIsAadhaarVerified] = useState(false);
   const [isAadhaarChecking, setIsAadhaarChecking] = useState(false);
   const [isPanVerified, setIsPanVerified] = useState(false);
   const [isPanChecking, setIsPanChecking] = useState(false);
+  const [uploading, setUploading] = useState({ aadhaarFront: false, aadhaarBack: false, pan: false });
+
+  const handleFileUpload = (e, field, callback) => {
+    const file = e.target.files[0];
+    if (file) {
+      setUploading(prev => ({ ...prev, [field]: true }));
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setTimeout(() => {
+          callback(reader.result);
+          setUploading(prev => ({ ...prev, [field]: false }));
+        }, 1500);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
 
   return (
     <div className="flex min-h-screen flex-col bg-white font-sans px-6 py-6 pb-32" style={{fontFamily:"'Inter', sans-serif"}}>
@@ -21,19 +39,13 @@ const DocumentUpload = () => {
         transition={{ duration: 0.4 }}
         className="w-full max-w-md mx-auto"
       >
-        {/* Back Button */}
-        <button 
-          onClick={() => navigate(-1)}
-          className="w-10 h-10 rounded-full border border-gray-200 flex items-center justify-center text-[#012b39] mb-8 hover:bg-gray-50 transition"
-        >
-          <ArrowLeft size={20} strokeWidth={2} />
-        </button>
+                  <button onClick={() => navigate(-1)} className="w-24 h-11 flex items-center justify-center rounded-full hover:bg-gray-50 transition-colors -ml-4 gap-1 mb-4">
+            <ArrowLeft size={16} className="text-[#475569]"  /> <span className='text-[#475569] text-[14px]'>Back</span>
+          </button>
 
-        {/* Stepper */}
-        <Stepper currentStep={2} />
+                <Stepper currentStep={2} />
 
-        {/* Title */}
-        <div className="mb-8">
+                <div className="mb-8">
           <h1 className="text-[28px] font-bold text-[#012b39] tracking-tight mb-2">
             Government ID
           </h1>
@@ -43,8 +55,7 @@ const DocumentUpload = () => {
         </div>
 
         <form className="space-y-6">
-          {/* Aadhaar Card Section */}
-          <div className="border border-[#E2E8F0] rounded-2xl p-5 space-y-4">
+                    <div className="border border-[#E2E8F0] rounded-2xl p-5 space-y-4">
             <div className="flex justify-between items-center mb-1">
               <h3 className="text-[16px] font-bold text-[#012b39]">Aadhaar Card</h3>
               {isAadhaarChecking ? (
@@ -53,7 +64,7 @@ const DocumentUpload = () => {
                 </div>
               ) : isAadhaarVerified ? (
                 <div className="bg-[#DCFCE7] text-[#15803D] px-2 py-1 rounded-md text-[11px] font-medium flex items-center gap-1">
-                  <Check size={12}/> Verified
+                  <ShieldCheck size={14} strokeWidth={2.5} /> Verified
                 </div>
               ) : null}
             </div>
@@ -75,7 +86,20 @@ const DocumentUpload = () => {
             <div className="flex gap-3">
               <div className="flex-1 space-y-1.5">
                 <label className="block text-[13px] text-[#012b39] font-medium">Front</label>
-                {aadhaarData.front ? (
+                {uploading.aadhaarFront ? (
+                  <div className="border border-dashed border-[#CBD5E1] bg-[#F8FAFC] rounded-xl p-4 flex flex-col items-center justify-center gap-3 h-32">
+                    <Loader2 size={24} className="text-[#F8B500] animate-spin" />
+                    <div className="w-full max-w-[120px] bg-gray-200 rounded-full h-1.5 overflow-hidden">
+                      <motion.div 
+                        initial={{ width: 0 }}
+                        animate={{ width: "100%" }}
+                        transition={{ duration: 1.5, ease: "linear" }}
+                        className="bg-[#012b39] h-1.5 rounded-full"
+                      />
+                    </div>
+                    <span className="text-[12px] font-medium text-[#012b39]">Uploading...</span>
+                  </div>
+                ) : aadhaarData.front ? (
                   <div className="relative w-full h-32 rounded-xl overflow-hidden border border-[#E2E8F0]">
                     <img src={aadhaarData.front} alt="Aadhaar Front" className="w-full h-full object-cover" />
                     <button 
@@ -88,18 +112,30 @@ const DocumentUpload = () => {
                   </div>
                 ) : (
                   <label className="border border-dashed border-[#CBD5E1] bg-[#F8FAFC] hover:bg-gray-100 rounded-xl p-4 flex flex-col items-center justify-center gap-2 cursor-pointer transition h-32">
-                    <input type="file" className="hidden" accept="image/*,.pdf" onChange={(e) => { if (e.target.files.length > 0) setAadhaarData({ ...aadhaarData, front: URL.createObjectURL(e.target.files[0]) }); }} />
+                    <input type="file" className="hidden" accept="image/*,.pdf" onChange={(e) => handleFileUpload(e, 'aadhaarFront', (base64) => setAadhaarData({ ...aadhaarData, front: base64 }))} />
                     <UploadCloud size={24} className="text-[#64748B]" />
                     <div className="text-center">
-                      <p className="text-[12px] font-medium text-[#012b39]">Tap to upload or drag & drop</p>
-                      <p className="text-[10px] text-[#94A3B8]">JPG, PNG or PDF - up to 5MB</p>
+                      <p className="text-[12px] font-medium text-[#012b39]">Tap to upload</p>
                     </div>
                   </label>
                 )}
               </div>
               <div className="flex-1 space-y-1.5">
                 <label className="block text-[13px] text-[#012b39] font-medium">Back</label>
-                {aadhaarData.back ? (
+                {uploading.aadhaarBack ? (
+                  <div className="border border-dashed border-[#CBD5E1] bg-[#F8FAFC] rounded-xl p-4 flex flex-col items-center justify-center gap-3 h-32">
+                    <Loader2 size={24} className="text-[#F8B500] animate-spin" />
+                    <div className="w-full max-w-[120px] bg-gray-200 rounded-full h-1.5 overflow-hidden">
+                      <motion.div 
+                        initial={{ width: 0 }}
+                        animate={{ width: "100%" }}
+                        transition={{ duration: 1.5, ease: "linear" }}
+                        className="bg-[#012b39] h-1.5 rounded-full"
+                      />
+                    </div>
+                    <span className="text-[12px] font-medium text-[#012b39]">Uploading...</span>
+                  </div>
+                ) : aadhaarData.back ? (
                   <div className="relative w-full h-32 rounded-xl overflow-hidden border border-[#E2E8F0]">
                     <img src={aadhaarData.back} alt="Aadhaar Back" className="w-full h-full object-cover" />
                     <button 
@@ -112,11 +148,10 @@ const DocumentUpload = () => {
                   </div>
                 ) : (
                   <label className="border border-dashed border-[#CBD5E1] bg-[#F8FAFC] hover:bg-gray-100 rounded-xl p-4 flex flex-col items-center justify-center gap-2 cursor-pointer transition h-32">
-                    <input type="file" className="hidden" accept="image/*,.pdf" onChange={(e) => { if (e.target.files.length > 0) setAadhaarData({ ...aadhaarData, back: URL.createObjectURL(e.target.files[0]) }); }} />
+                    <input type="file" className="hidden" accept="image/*,.pdf" onChange={(e) => handleFileUpload(e, 'aadhaarBack', (base64) => setAadhaarData({ ...aadhaarData, back: base64 }))} />
                     <UploadCloud size={24} className="text-[#64748B]" />
                     <div className="text-center">
-                      <p className="text-[12px] font-medium text-[#012b39]">Tap to upload or drag & drop</p>
-                      <p className="text-[10px] text-[#94A3B8]">JPG, PNG or PDF - up to 5MB</p>
+                      <p className="text-[12px] font-medium text-[#012b39]">Tap to upload</p>
                     </div>
                   </label>
                 )}
@@ -144,8 +179,7 @@ const DocumentUpload = () => {
             )}
           </div>
 
-          {/* PAN Card Section */}
-          <div className="border border-[#E2E8F0] rounded-2xl p-5 space-y-4">
+                    <div className="border border-[#E2E8F0] rounded-2xl p-5 space-y-4">
             <div className="flex justify-between items-center mb-1">
               <h3 className="text-[16px] font-bold text-[#012b39]">PAN Card</h3>
               {isPanChecking ? (
@@ -154,7 +188,7 @@ const DocumentUpload = () => {
                 </div>
               ) : isPanVerified ? (
                 <div className="bg-[#DCFCE7] text-[#15803D] px-2 py-1 rounded-md text-[11px] font-medium flex items-center gap-1">
-                  <Check size={12} strokeWidth={3} /> Verified
+                  <ShieldCheck size={14} strokeWidth={2.5} /> Verified
                 </div>
               ) : null}
             </div>
@@ -174,7 +208,20 @@ const DocumentUpload = () => {
 
             <div className="space-y-1.5">
               <label className="block text-[13px] text-[#012b39] font-medium">Upload PAN</label>
-              {panData.image ? (
+              {uploading.pan ? (
+                <div className="border border-dashed border-[#CBD5E1] bg-[#F8FAFC] rounded-xl p-6 flex flex-col items-center justify-center gap-3 h-40">
+                  <Loader2 size={24} className="text-[#F8B500] animate-spin" />
+                  <div className="w-full max-w-[120px] bg-gray-200 rounded-full h-1.5 overflow-hidden">
+                    <motion.div 
+                      initial={{ width: 0 }}
+                      animate={{ width: "100%" }}
+                      transition={{ duration: 1.5, ease: "linear" }}
+                      className="bg-[#012b39] h-1.5 rounded-full"
+                    />
+                  </div>
+                  <span className="text-[12px] font-medium text-[#012b39]">Uploading...</span>
+                </div>
+              ) : panData.image ? (
                 <div className="relative w-full h-40 rounded-xl overflow-hidden border border-[#E2E8F0]">
                   <img src={panData.image} alt="PAN Card" className="w-full h-full object-cover" />
                   <button 
@@ -187,11 +234,10 @@ const DocumentUpload = () => {
                 </div>
               ) : (
                 <label className="border border-dashed border-[#CBD5E1] bg-[#F8FAFC] hover:bg-gray-100 rounded-xl p-6 flex flex-col items-center justify-center gap-2 cursor-pointer transition h-40">
-                  <input type="file" className="hidden" accept="image/*,.pdf" onChange={(e) => { if (e.target.files.length > 0) setPanData({ ...panData, image: URL.createObjectURL(e.target.files[0]) }); }} />
+                  <input type="file" className="hidden" accept="image/*,.pdf" onChange={(e) => handleFileUpload(e, 'pan', (base64) => setPanData({ ...panData, image: base64 }))} />
                   <UploadCloud size={24} className="text-[#64748B]" />
                   <div className="text-center">
-                    <p className="text-[12px] font-medium text-[#012b39]">Tap to upload or drag & drop</p>
-                    <p className="text-[10px] text-[#94A3B8]">JPG, PNG or PDF - up to 5MB</p>
+                    <p className="text-[12px] font-medium text-[#012b39]">Tap to upload</p>
                   </div>
                 </label>
               )}
@@ -220,10 +266,18 @@ const DocumentUpload = () => {
 
         </form>
 
-        {/* Action Button */}
-        <div className="mt-8 pb-8">
+                <div className="mt-8 pb-8">
           <button
-            onClick={() => navigate('/license')}
+            onClick={() => {
+              setDocuments({ 
+                aadhaar: aadhaarData.number, 
+                pan: panData.number,
+                aadhaarFront: aadhaarData.front,
+                aadhaarBack: aadhaarData.back,
+                panImage: panData.image
+              });
+              navigate('/license');
+            }}
             className="w-full rounded-full py-[12px] text-[15px] transition-all bg-[#012b39] hover:bg-[#011c26] text-white active:scale-[0.98] shadow-lg flex items-center justify-center gap-2"
           >
             Next <ArrowRight size={18} />
