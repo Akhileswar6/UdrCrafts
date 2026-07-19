@@ -16,14 +16,14 @@ const OTP = () => {
   const phone = location.state?.phone || '0000000000';
   const mockOtp = location.state?.mockOtp;
 
-  // Auto-focus the first input field on mount
+
   useEffect(() => {
     if (inputRefs.current[0]) {
       inputRefs.current[0].focus();
     }
   }, []);
 
-  // Timer countdown
+
   useEffect(() => {
     if (countdown > 0) {
       const timer = setTimeout(() => setCountdown(countdown - 1), 1000);
@@ -49,7 +49,7 @@ const OTP = () => {
       if (response.ok) {
         localStorage.setItem('token', data.token);
 
-        // Artificial delay so the user can clearly see the green "Verifying" text
+
         setTimeout(() => {
           if (data.isNew || !data.partner.profileCompleted) {
             navigate('/welcome');
@@ -75,14 +75,14 @@ const OTP = () => {
     newOtp[index] = value.substring(value.length - 1);
     setOtp(newOtp);
 
-    // Move to next input if value exists
+
     if (value && index < 5 && inputRefs.current[index + 1]) {
       inputRefs.current[index + 1].focus();
     }
 
-    // Auto verify when all 6 digits are entered
+
     if (newOtp.join('').length === 6) {
-      // Small timeout allows the input UI to update before blocking with loading state
+
       setTimeout(() => {
         executeVerification(newOtp.join(''));
       }, 0);
@@ -167,7 +167,7 @@ const OTP = () => {
                 animate={{ opacity: 1, scale: 1 }}
                 className="text-[#64748B] text-[14px]"
               >
-                Verifying...
+                ✓ Auto verifying...
               </motion.p>
             )}
           </div>

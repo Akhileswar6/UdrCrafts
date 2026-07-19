@@ -37,16 +37,22 @@ const Welcome = () => {
         transition={{ duration: 0.4 }}
         className="w-full max-w-md mx-auto"
       >
-        {/* Header */}
-        <h1 className="text-[34px] font-bold text-[#012b39] tracking-tight mb-2">
-          Welcome aboard!
+
+        <div className="font-medium text-[24px] text-[#012b39] tracking-tight leading-tight mt-1 mb-10">
+          <span className="">UdrCrafts</span>
+          <sup className="relative -top-2 ml-[1px] text-[0.4em] font-bold ">
+            &reg;
+          </sup>
+        </div>
+
+                <h1 className="text-[32px] font-bold text-[#012b39] tracking-tight mb-2">
+          Welcome <span className="text-[#F8B500]">Aboard!</span>
         </h1>
         <p className="text-[15px] text-[#64748B] mb-8">
           Let's set up your partner profile. It only takes a few minutes.
         </p>
 
-        {/* Estimated Time Card */}
-        <div className="bg-[#122A30] rounded-[24px] p-6 mb-8 text-white shadow-lg">
+                <div className="bg-[#122A30] rounded-[24px] p-6 mb-8 text-white shadow-lg">
           <div className="flex items-center gap-4 mb-6">
             <div className="w-12 h-12 bg-[#F59E0B] rounded-full flex items-center justify-center shrink-0">
               <Clock size={24} className="text-[#012b39]" strokeWidth={2.5} />
@@ -71,8 +77,7 @@ const Welcome = () => {
           </div>
         </div>
 
-        {/* Steps List */}
-        <div className="space-y-4">
+                <div className="space-y-4">
           {steps.map((step, index) => (
             <div
               key={index}
@@ -93,8 +98,7 @@ const Welcome = () => {
           ))}
         </div>
 
-        {/* Action Button */}
-        <div className="mt-12 pb-8">
+                <div className="mt-12 pb-8">
           <button
             onClick={() => navigate('/basic-info')}
             className="w-full rounded-full py-[10px] text-[17px] transition-all bg-[#012b39] hover:bg-[#011c26] text-white active:scale-[0.98] shadow-lg flex items-center justify-center gap-2"

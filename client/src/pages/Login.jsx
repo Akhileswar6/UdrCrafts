@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Phone, ShieldCheck, ArrowLeft } from 'lucide-react';
+import { Phone, Lock, ArrowLeft } from 'lucide-react';
 import { motion } from 'framer-motion';
 
 const Login = () => {
@@ -25,7 +25,7 @@ const Login = () => {
     setIsLoading(true);
 
     try {
-      // Mock API call to backend
+
       const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:5000';
       const response = await fetch(`${apiUrl}/api/auth/login`, {
         method: 'POST',
@@ -60,9 +60,7 @@ const Login = () => {
         className="w-full max-w-md mt-6"
       >
 
-
-        {/* Title */}
-        <div className="text-center mb-10 space-y-2">
+                <div className="text-center mb-10 space-y-2">
           <h1 className="text-[32px] font-bold text-[#012b39] tracking-tight">
             Enter your mobile number
           </h1>
@@ -71,8 +69,7 @@ const Login = () => {
           </p>
         </div>
 
-        {/* Form */}
-        <form onSubmit={handleLogin} className="space-y-6">
+                <form onSubmit={handleLogin} className="space-y-6">
           <div className="space-y-2">
             <label className="block text-[15px] text-[#012b39] font-medium">
               Mobile number
@@ -109,11 +106,10 @@ const Login = () => {
             </label>
           </div>
 
-          {/* Info Banner */}
-          <div className="bg-[#FEF9C3] border border-[#FEF08A] rounded-xl px-4 py-2.5 flex gap-2.5 items-center mt-3 mx-1">
-            <ShieldCheck className="text-[#D97706] shrink-0" size={18} strokeWidth={2.2} />
-            <p className="text-[13px] text-[#012b39] font-medium leading-tight">
-              Your information is safe and never shared with third parties.
+                    <div className="bg-[#DCFCE7] border border-[#BBF7D0] rounded-xl px-4 py-3 flex gap-2.5 items-center justify-center mt-3 mx-1">
+            <Lock className="text-[#15803D] shrink-0" size={16} strokeWidth={2.5} />
+            <p className="text-[13px] text-[#166534] font-medium leading-tight">
+              Your information is secure
             </p>
           </div>
 
@@ -121,7 +117,7 @@ const Login = () => {
             <button
               type="submit"
               disabled={isLoading || phone.length !== 10 || !agreed}
-              className={`w-full rounded-full py-[10px] text-[17px]  transition-all ${isLoading || phone.length !== 10 || !agreed
+              className={`w-full rounded-full py-[10px] text-[17px]  transition-all mb-10 ${isLoading || phone.length !== 10 || !agreed
                   ? 'bg-[#83959A] text-white opacity-90 cursor-not-allowed'
                   : 'bg-[#012b39] hover:bg-[#011c26] text-white active:scale-[0.98]'
                 }`}
