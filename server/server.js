@@ -36,7 +36,7 @@ app.get('/api/health', (req, res) => {
 });
 
 
-mongoose.connect(process.env.MONGO_URI || 'mongodb:
+mongoose.connect(process.env.MONGO_URI || 'mongodb://127.0.0.1:27017/udr-crafts')
   .then(() => {
     console.log('Connected to MongoDB');
     app.listen(PORT, () => {
