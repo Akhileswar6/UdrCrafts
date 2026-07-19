@@ -1,20 +1,12 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ArrowLeft, User, IdCard, CarFront, MapPin, Check, Edit2, CheckCircle2, Loader2 } from 'lucide-react';
+import { ArrowLeft, User, IdCard, CarFront, MapPin, Edit2 } from 'lucide-react';
 import { motion } from 'framer-motion';
 import useStore from '../store/useStore';
 
-const Review = () => {
+const Profile = () => {
   const navigate = useNavigate();
   const { basicInfo, documents, license, location } = useStore();
-  const [isSubmitting, setIsSubmitting] = useState(false);
-
-  useEffect(() => {
-
-    if (!basicInfo.fullName) {
-      navigate('/basic-info');
-    }
-  }, [basicInfo.fullName, navigate]);
 
   const maskEmail = (email) => {
     if (!email) return '';
@@ -24,61 +16,36 @@ const Review = () => {
   };
 
   return (
-    <div className="flex min-h-screen flex-col bg-white font-sans px-6 py-6 pb-32" style={{fontFamily:"'Inter', sans-serif"}}>
+    <div className="flex min-h-screen flex-col bg-[#FFFCF5] font-sans px-6 py-6 pb-32" style={{fontFamily:"'Inter', sans-serif"}}>
       <motion.div 
         initial={{ opacity: 0, x: 20 }}
         animate={{ opacity: 1, x: 0 }}
         transition={{ duration: 0.4 }}
         className="w-full max-w-md mx-auto"
       >
-                  <button onClick={() => navigate(-1)} className="w-24 h-11 flex items-center justify-center rounded-full hover:bg-gray-50 transition-colors -ml-4 gap-1 mb-4">
-            <ArrowLeft size={16} className="text-[#475569]"  /> <span className='text-[#475569] text-[14px]'>Back</span>
-          </button>
+                <button onClick={() => navigate('/dashboard')} className="w-24 h-11 flex items-center justify-center rounded-full hover:bg-gray-100 transition-colors -ml-4 gap-1 mb-4">
+          <ArrowLeft size={16} className="text-[#475569]"  /> <span className='text-[#475569] text-[14px]'>Back</span>
+        </button>
 
-                <div className="flex items-center justify-between mb-10 relative px-2">
-                    <div className="absolute top-4 left-6 right-6 h-[3px] bg-[#F8FAFC] -z-10">
-            <div className="h-full bg-[#F59E0B] w-full rounded-full"></div>
+                <div className="flex flex-col items-center mb-8 bg-white border border-[#E2E8F0] rounded-3xl p-6 shadow-md relative overflow-hidden">
+          <div className="absolute top-0 left-0 w-full h-24 bg-gradient-to-r from-[#012b39] to-[#0f4454]"></div>
+          
+          <div className="relative w-24 h-24 rounded-full bg-white p-1.5 mb-3 mt-6 shadow-md">
+            <div className="w-full h-full rounded-full bg-[#FEF3C7] flex items-center justify-center text-[#D97706] font-bold text-3xl">
+              {basicInfo.fullName ? basicInfo.fullName.substring(0, 2).toUpperCase() : 'AK'}
+            </div>
           </div>
           
-          <div className="flex flex-col items-center gap-2">
-            <div className="w-8 h-8 rounded-full bg-[#F59E0B] text-[#012b39] font-bold flex items-center justify-center shadow-sm">
-              <Check size={16} strokeWidth={3} />
-            </div>
-            <span className="text-[11px] font-medium text-[#012b39]">Basic</span>
-          </div>
-          <div className="flex flex-col items-center gap-2">
-            <div className="w-8 h-8 rounded-full bg-[#F59E0B] text-[#012b39] font-bold flex items-center justify-center shadow-sm">
-              <Check size={16} strokeWidth={3} />
-            </div>
-            <span className="text-[11px] font-medium text-[#012b39]">Gov ID</span>
-          </div>
-          <div className="flex flex-col items-center gap-2">
-            <div className="w-8 h-8 rounded-full bg-[#F59E0B] text-[#012b39] font-bold flex items-center justify-center shadow-sm">
-              <Check size={16} strokeWidth={3} />
-            </div>
-            <span className="text-[11px] font-medium text-[#012b39]">License</span>
-          </div>
-          <div className="flex flex-col items-center gap-2">
-            <div className="w-8 h-8 rounded-full bg-[#F59E0B] text-[#012b39] font-bold flex items-center justify-center shadow-sm">
-              <Check size={16} strokeWidth={3} />
-            </div>
-            <span className="text-[11px] font-medium text-[#012b39]">Location</span>
-          </div>
-          <div className="flex flex-col items-center gap-2">
-            <div className="w-8 h-8 rounded-full bg-[#F59E0B] text-[#012b39] font-bold flex items-center justify-center shadow-sm">
-              <Check size={16} strokeWidth={3} />
-            </div>
-            <span className="text-[11px] font-medium text-[#012b39]">Review</span>
-          </div>
-        </div>
-
-                <div className="mb-8">
-          <h1 className="text-[28px] font-bold text-[#012b39] tracking-tight mb-2">
-            Review your details
+          <h1 className="text-[24px] font-bold text-[#012b39] tracking-tight mb-1 text-center">
+            {basicInfo.fullName || 'Akhileswar'}
           </h1>
-          <p className="text-[15px] text-[#64748B]">
-            Make sure everything looks correct before we verify.
+          <p className="text-[14px] text-[#64748B] text-center mb-4">
+            {basicInfo.email || 'partner@udrcrafts.com'}
           </p>
+          
+          <div className="bg-[#DCFCE7] text-[#15803D] px-4 py-1.5 rounded-full text-[13px] font-medium flex items-center gap-1.5 border border-[#BBF7D0]">
+            <User size={14} strokeWidth={2.5} /> Active Partner
+          </div>
         </div>
 
         <div className="space-y-4">
@@ -91,9 +58,6 @@ const Review = () => {
                 </div>
                 <h3 className="font-medium text-[#012b39] text-[16px]">Basic information</h3>
               </div>
-              <button onClick={() => navigate('/basic-info')} className="bg-[#F8FAFC] text-[#334155] px-3 py-1.5 rounded-full text-[12px] font-medium flex items-center gap-1.5 hover:bg-gray-200 transition">
-                <Edit2 size={12} /> Edit
-              </button>
             </div>
             
             <div className="space-y-3">
@@ -128,9 +92,6 @@ const Review = () => {
                 </div>
                 <h3 className="font-medium text-[#012b39] text-[16px]">Government ID</h3>
               </div>
-              <button onClick={() => navigate('/documents')} className="bg-[#F8FAFC] text-[#334155] px-3 py-1.5 rounded-full text-[12px] font-medium flex items-center gap-1.5 hover:bg-gray-200 transition">
-                <Edit2 size={12} /> Edit
-              </button>
             </div>
             
             <div className="space-y-3">
@@ -138,10 +99,21 @@ const Review = () => {
                 <span className="text-[#64748B]">Aadhaar</span>
                 <span className="font-medium text-[#012b39]">{documents.aadhaar || 'Not provided'}</span>
               </div>
-              <div className="flex justify-between items-center text-[14px]">
+              {(documents.aadhaarFront || documents.aadhaarBack) && (
+                <div className="flex gap-2">
+                  {documents.aadhaarFront && <img src={documents.aadhaarFront} alt="Aadhaar Front" className="w-16 h-12 object-cover rounded-md border border-[#E2E8F0]" />}
+                  {documents.aadhaarBack && <img src={documents.aadhaarBack} alt="Aadhaar Back" className="w-16 h-12 object-cover rounded-md border border-[#E2E8F0]" />}
+                </div>
+              )}
+              <div className="flex justify-between items-center text-[14px] pt-2 border-t border-[#F1F5F9]">
                 <span className="text-[#64748B]">PAN</span>
                 <span className="font-medium text-[#012b39]">{documents.pan || 'Not provided'}</span>
               </div>
+              {documents.panImage && (
+                <div className="flex gap-2">
+                  <img src={documents.panImage} alt="PAN Card" className="w-16 h-12 object-cover rounded-md border border-[#E2E8F0]" />
+                </div>
+              )}
             </div>
           </div>
 
@@ -153,9 +125,6 @@ const Review = () => {
                 </div>
                 <h3 className="font-medium text-[#012b39] text-[16px]">Driving license</h3>
               </div>
-              <button onClick={() => navigate('/license')} className="bg-[#F8FAFC] text-[#334155] px-3 py-1.5 rounded-full text-[12px] font-medium flex items-center gap-1.5 hover:bg-gray-200 transition">
-                <Edit2 size={12} /> Edit
-              </button>
             </div>
             
             <div className="space-y-3">
@@ -167,6 +136,12 @@ const Review = () => {
                 <span className="text-[#64748B]">Expiry date</span>
                 <span className="font-medium text-[#012b39]">{license.expiryDate || 'Not provided'}</span>
               </div>
+              {(license.frontImage || license.backImage) && (
+                <div className="flex gap-2 pt-2 border-t border-[#F1F5F9]">
+                  {license.frontImage && <img src={license.frontImage} alt="License Front" className="w-16 h-12 object-cover rounded-md border border-[#E2E8F0]" />}
+                  {license.backImage && <img src={license.backImage} alt="License Back" className="w-16 h-12 object-cover rounded-md border border-[#E2E8F0]" />}
+                </div>
+              )}
             </div>
           </div>
 
@@ -178,9 +153,6 @@ const Review = () => {
                 </div>
                 <h3 className="font-medium text-[#012b39] text-[16px]">Location</h3>
               </div>
-              <button onClick={() => navigate('/location')} className="bg-[#F8FAFC] text-[#334155] px-3 py-1.5 rounded-full text-[12px] font-medium flex items-center gap-1.5 hover:bg-gray-200 transition">
-                <Edit2 size={12} /> Edit
-              </button>
             </div>
             
             <div className="space-y-3">
@@ -198,63 +170,10 @@ const Review = () => {
               </div>
             </div>
           </div>
-
-                    <div className="bg-[#DCFCE7] border border-[#BBF7D0] rounded-xl p-4 flex gap-2 items-center mt-6">
-            <CheckCircle2 className="text-[#15803D] shrink-0" size={18} strokeWidth={2.5} />
-            <p className="text-[14px] text-[#166534] font-medium">
-              All documents verified. Ready to submit.
-            </p>
-          </div>
-
-                    <div className="mt-8 pb-8">
-            <button
-              onClick={async () => {
-                setIsSubmitting(true);
-                try {
-                  const token = localStorage.getItem('token');
-                  const payload = {
-                    ...basicInfo,
-                    ...documents,
-                    ...license,
-                    ...location,
-                    documents: {
-                      aadhaarFront: documents.aadhaarFront,
-                      aadhaarBack: documents.aadhaarBack,
-                      panCard: documents.panImage,
-                      licenseFront: license.frontImage,
-                      licenseBack: license.backImage
-                    }
-                  };
-                  const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:5000';
-                  const res = await fetch(`${apiUrl}/api/partner/profile`, {
-                    method: 'PUT',
-                    headers: {
-                      'Content-Type': 'application/json',
-                      'Authorization': `Bearer ${token}`
-                    },
-                    body: JSON.stringify(payload)
-                  });
-                  if (!res.ok) {
-                    throw new Error('Failed to update profile');
-                  }
-                  navigate('/verification');
-                } catch (error) {
-                  console.error(error);
-                  alert('Error submitting profile data.');
-                } finally {
-                  setIsSubmitting(false);
-                }
-              }}
-              disabled={isSubmitting}
-              className="w-full rounded-full py-[12px] text-[15px] transition-all bg-[#012b39] hover:bg-[#011c26] text-white active:scale-[0.98] shadow-lg flex justify-center items-center gap-2 disabled:opacity-70 disabled:cursor-not-allowed"
-            >
-              {isSubmitting ? <Loader2 size={18} className="animate-spin" /> : 'Submit for Verification'}
-            </button>
-          </div>
         </div>
       </motion.div>
     </div>
   );
 };
 
-export default Review;
+export default Profile;
